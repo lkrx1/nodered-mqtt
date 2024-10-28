@@ -1,0 +1,56 @@
+version: "3"
+services:
+  influxdb:
+    image: influxdb
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    env_file:
+      - "influxdb.env"
+    volumes:
+      - "influxdb-data:/var/lib/influxdb"
+    networks:
+      - mqtt-network
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "5050:5050"
+    env_file:
+      - "grafana.env"
+    user: "0"
+    volumes:
+      - "grafana-data:/var/lib/grafana"
+    networks:
+      - mqtt-network
+
+  node-red:
+    image: nodered/node-red
+    container_name: node-red
+    ports:
+      - "1880:1880"
+    volumes:
+      - "node-red-data:/data"
+    networks:
+      - mqtt-network
+
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - "mosquitto-data:/mosquitto"
+      - "./mosquitto.conf:/mosquitto/config/mosquitto.conf"
+
+networks:
+  mqtt-network:
+    driver: bridge
+
+volumes:
+  influxdb-data:
+  grafana-data:
+  node-red-data:
+  mosquitto-data:
